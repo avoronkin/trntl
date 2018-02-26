@@ -1,0 +1,20 @@
+{
+  "name": "taran",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/Client.js",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^3.1.0",
+    "msgpack-lite": "^0.1.26",
+    "packet-streams": "^1.0.2",
+    "multipipe": "^2.0.3"
+  },
+  "devDependencies": {
+    "mocha": "^5.0.1"
+  }
+}

@@ -29,15 +29,6 @@
         "space-before-function-paren": [
             "error",
             "always"
-        ],
-        "newline-per-chained-call": [
-            "error",
-            { "ignoreChainWithDepth": 2 }
-        ],
-        "generator-star-spacing": [
-            "error",
-            "after"
-        ],
-        "require-yield": "off"
+        ]
     }
 }

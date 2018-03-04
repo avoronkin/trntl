@@ -1,0 +1,13 @@
+version: "2"
+services:
+  app:
+    container_name: app
+    build: .
+    command: npm test
+    links:
+      - tarantool
+  tarantool:
+    container_name: tarantool
+    image: tarantool/tarantool:1.7
+    ports:
+      - "3301:3301"

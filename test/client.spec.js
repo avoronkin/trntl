@@ -137,6 +137,40 @@ describe('client', () => {
         })
     })
 
+    describe('insert', () => {
+        it('should insert', async () => {
+            const client = new Client()
+
+            await client.connect()
+
+            const [spaceId, indexId] = client.getIds('tester', 'primary')
+
+            await client.insert(spaceId, [4, 'Björk'])
+            const [res] = await client.select(spaceId, indexId, 'eq', 4)
+            assert.deepEqual(res, [4, 'Björk'])
+
+            await client.close()
+        })
+    })
+
+    describe('replace', () => {
+        it('should replace', async () => {
+            const client = new Client()
+
+            await client.connect()
+
+            const [spaceId, indexId] = client.getIds('tester', 'primary')
+            const [before] = await client.select(spaceId, indexId, 'eq', 1)
+            assert.deepEqual(before, [1, 'Roxette'])
+
+            await client.replace(spaceId, [1, 'Kanye West', 2015])
+            const [after] = await client.select(spaceId, indexId, 'eq', 1)
+            assert.deepEqual(after, [1, 'Kanye West', 2015])
+
+            await client.close()
+        })
+    })
+
 
     it.skip('should auth', async () => {
         const client = new Client()

@@ -1,18 +1,11 @@
 const Client = require('../lib/Client')
 const assert = require('assert')
+const { TARANTOOL_HOST:host = 'localhost', TARANTOOL_PORT:port = 3301 } = process.env
 
 describe('client', () => {
-    before(async () => {
-        const client = new Client()
-        await client.connect()
-
-        await client.eval('box.space.tester:truncate()')
-
-        await client.close()
-    })
 
     it('should handshake with server', async () => {
-        const client = new Client()
+        const client = new Client({ host, port})
         await client.connect()
 
         assert.equal(!!client.salt, true)
@@ -22,7 +15,7 @@ describe('client', () => {
     })
 
     it('should ping', async () => {
-        const client = new Client()
+        const client = new Client({ host, port})
         await client.connect()
 
         await client.ping()
@@ -33,7 +26,7 @@ describe('client', () => {
     describe('eval', () => {
 
         it('should eval1', async () => {
-            const client = new Client()
+            const client = new Client({ host, port})
             await client.connect()
 
             const [res] = await client.eval('return box.cfg')
@@ -44,7 +37,7 @@ describe('client', () => {
         })
 
         it('should eval2', async () => {
-            const client = new Client()
+            const client = new Client({ host, port})
             await client.connect()
 
             const [res] = await client.eval('local json = require("json"); return json.decode("[123, 234, 345]")')
@@ -55,7 +48,7 @@ describe('client', () => {
         })
 
         it('should eval3', async () => {
-            const client = new Client()
+            const client = new Client({ host, port})
             await client.connect()
 
             const [res] = await client.eval('local json = require("json"); return json.decode(...)', '[123, 234, 345]')
@@ -68,7 +61,7 @@ describe('client', () => {
 
     describe('call', () => {
         it('should call1', async () => {
-            const client = new Client()
+            const client = new Client({ host, port})
             await client.connect()
 
             const [result] = await client.call('math.floor', 5.4)
@@ -81,13 +74,12 @@ describe('client', () => {
 
     describe('select', () => {
         it('should select', async () => {
-            const client = new Client()
+            const client = new Client({ host, port})
             await client.connect()
 
             const id = 495
-            const [spaceId, indexId] = client.getIds('tester', 'primary')
+            const [spaceId, indexId] = client.getIds('test', 'primary')
 
-            await client.insert(spaceId, [id, 'created'])
             const [res] = await client.select(spaceId, indexId, 'eq', id)
 
             assert.deepEqual(res, [id, 'created'])
@@ -98,15 +90,14 @@ describe('client', () => {
 
     describe('delete', () => {
         it('should delete', async () => {
-            const client = new Client()
+            const client = new Client({ host, port})
             await client.connect()
 
             const id = 496
-            const [spaceId, indexId] = client.getIds('tester', 'primary')
+            const [spaceId, indexId] = client.getIds('test', 'primary')
 
-            await client.insert(spaceId, [id, 'created'])
-            const [created] = await client.select(spaceId, indexId, 'eq', id)
-            assert.deepEqual(created, [id, 'created'])
+            const [before] = await client.select(spaceId, indexId, 'eq', id)
+            assert.deepEqual(before, [id, 'created'])
 
             await client.delete(spaceId, indexId, id)
             const [deleted] = await client.select(spaceId, indexId, 'eq', id)
@@ -118,12 +109,13 @@ describe('client', () => {
 
     describe('insert', () => {
         it('should insert', async () => {
-            const client = new Client()
+            const client = new Client({ host, port})
             await client.connect()
 
             const id = 497
-            const [spaceId, indexId] = client.getIds('tester', 'primary')
-            await client.delete(spaceId, indexId, id)
+            const [spaceId, indexId] = client.getIds('test', 'primary')
+            const [before] = await client.select(spaceId, indexId, 'eq', id)
+            assert.deepEqual(before, undefined)
 
             await client.insert(spaceId, [id, 'inserted'])
             const [res] = await client.select(spaceId, indexId, 'eq', id)
@@ -135,15 +127,13 @@ describe('client', () => {
 
     describe('replace', () => {
         it('should replace', async () => {
-            const client = new Client()
+            const client = new Client({ host, port})
             await client.connect()
 
             const id = 498
-            const [spaceId, indexId] = client.getIds('tester', 'primary')
-            await client.delete(spaceId, indexId, id)
-            await client.insert(spaceId, [id, 'created'])
-            const [created] = await client.select(spaceId, indexId, 'eq', id)
-            assert.deepEqual(created, [id, 'created'])
+            const [spaceId, indexId] = client.getIds('test', 'primary')
+            const [before] = await client.select(spaceId, indexId, 'eq', id)
+            assert.deepEqual(before, [id, 'created'])
 
             await client.replace(spaceId, [id, 'replaced'])
             const [replaced] = await client.select(spaceId, indexId, 'eq', id)
@@ -155,15 +145,13 @@ describe('client', () => {
 
     describe('update', () => {
         it('should update', async () => {
-            const client = new Client()
+            const client = new Client({ host, port})
             await client.connect()
 
             const id = 499
-            const [spaceId, indexId] = client.getIds('tester', 'primary')
-            await client.delete(spaceId, indexId, id)
-            await client.insert(spaceId, [id, 'created'])
-            const [created] = await client.select(spaceId, indexId, 'eq', id)
-            assert.deepEqual(created, [id, 'created'])
+            const [spaceId, indexId] = client.getIds('test', 'primary')
+            const [before] = await client.select(spaceId, indexId, 'eq', id)
+            assert.deepEqual(before, [id, 'created'])
 
             await client.update(spaceId, indexId, [id], [['=', 1, 'updated']])
             const [updated] = await client.select(spaceId, indexId, 'eq', id)
@@ -175,12 +163,11 @@ describe('client', () => {
 
     describe('upsert', () => {
         it('should upsert', async () => {
-            const client = new Client()
+            const client = new Client({ host, port})
             await client.connect()
 
             const id = 500
-            const [spaceId, indexId] = client.getIds('tester', 'primary')
-            await client.delete(spaceId, indexId, id)
+            const [spaceId, indexId] = client.getIds('test', 'primary')
 
             await client.upsert(spaceId, indexId, [id, 'hello, world', 123], [[':', 1, 2, 3, '---']])
             const [inserted] = await client.select(spaceId, indexId, 'eq', id)
@@ -196,11 +183,11 @@ describe('client', () => {
 
 
     it.skip('should auth', async () => {
-        const client = new Client()
+        const client = new Client({ host, port})
 
         await client.connect()
 
-        const res = await client.auth()
+        const res = await client.auth('test', 'pass')
 
         console.log('res', res)
 

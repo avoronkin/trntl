@@ -1,17 +1,8 @@
 version: "3"
 services:
-  # app:
-  #   container_name: app
-  #   build: .
-  #   environment:
-  #     TARANTOOL_HOST: tarantool
-  #     TARANTOOL_PORT: 3301
-  #   command: npm test
-  #   depends_on:
-  #     - tarantool
   tarantool:
     container_name: tarantool
-    image: tarantool/tarantool:1.7
+    image: tarantool/tarantool:${TARANTOOL_VERSION}
     environment:
       TARANTOOL_PORT: 3301
     ports:

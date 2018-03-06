@@ -3,6 +3,8 @@ node_js:
   - "8"
 env:
   DOCKER_COMPOSE_VERSION: 1.18.0
+  TARANTOOL_VERSION: 1.7
+  TARANTOOL_VERSION: 1.8
 
 before_install:
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -

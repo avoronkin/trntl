@@ -182,14 +182,12 @@ describe('client', () => {
     })
 
 
-    it.skip('should auth', async () => {
+    it('should auth', async () => {
         const client = new Client({ host, port})
 
         await client.connect()
 
-        const res = await client.auth('test', 'pass')
-
-        console.log('res', res)
+        await client.auth('test', 'pass')
 
         await client.close()
     })

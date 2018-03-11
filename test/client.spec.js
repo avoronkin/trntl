@@ -217,4 +217,20 @@ describe('client', () => {
             await client.close()
         })
     })
+
+    describe('space', () => {
+        it ('should select', async () => {
+            const client = new Client({ host, port})
+            await client.connect()
+
+            const id = 495
+            const [res] = await client.space('test').select('primary', 'eq', id)
+
+            assert.deepEqual(res, [id, 'created'])
+
+            await client.close()
+        })
+
+        
+    })
 })

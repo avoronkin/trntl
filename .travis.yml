@@ -2,7 +2,6 @@ language: node_js
 node_js:
   - "8"
 env:
-  - DOCKER_COMPOSE_VERSION=1.18.0 TARANTOOL_VERSION=1.7
   - DOCKER_COMPOSE_VERSION=1.18.0 TARANTOOL_VERSION=1.8
 
 before_install:

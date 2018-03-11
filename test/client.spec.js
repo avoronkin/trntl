@@ -197,8 +197,7 @@ describe('client', () => {
             const client = new Client({ host, port})
             await client.connect()
 
-            const result0 = await client.execute('DROP TABLE IF EXISTS table1')
-            assert.deepEqual(result0, { info: { row_count: 1 } })
+            await client.execute('DROP TABLE IF EXISTS table1')
 
             const result1 = await client.execute('CREATE TABLE IF NOT EXISTS table1 (column1 INTEGER PRIMARY KEY, column2 VARCHAR(100))')
             assert.deepEqual(result1, { info: { row_count: 1 } })

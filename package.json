@@ -1,7 +1,7 @@
 {
   "name": "taran",
   "version": "1.0.0",
-  "description": "",
+  "description": "tarantool driver with blackjack",
   "main": "lib/Client.js",
   "scripts": {
     "test": "mocha --recursive"

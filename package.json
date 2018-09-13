@@ -1,5 +1,5 @@
 {
-  "name": "taran",
+  "name": "trntl-core",
   "version": "1.0.0",
   "description": "tarantool driver with blackjack",
   "main": "lib/Client.js",

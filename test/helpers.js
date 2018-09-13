@@ -1,3 +1,4 @@
+const { SPACE, INDEX_SPACE } = require('../lib/constants')
 
 module.exports = {
 

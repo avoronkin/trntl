@@ -1,13 +1,15 @@
 const Client = require('../../lib/Client')
 const assert = require('assert')
 const { TARANTOOL_HOST:host = 'localhost', TARANTOOL_PORT:port = 3301 } = process.env
+const helpers = require('../helpers')
 
 describe('upsert', () => {
-    let client
+    let client, getIds
 
     beforeEach(async () => {
         client = new Client({ host, port})
         await client.connect()
+        getIds = await helpers.loadSchema(client)
     })
 
     afterEach(async () => {
@@ -16,7 +18,7 @@ describe('upsert', () => {
 
     it('should upsert', async () => {
         const id = 500
-        const [spaceId, indexId] = client.getIds('test', 'primary')
+        const [spaceId, indexId] = getIds('test', 'primary')
 
         await client.upsert(spaceId, indexId, [id, 'hello, world', 123], [[':', 1, 2, 3, '---']])
         const [inserted] = await client.select(spaceId, indexId, 'eq', id)

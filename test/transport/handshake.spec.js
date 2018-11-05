@@ -1,21 +1,21 @@
-const Client = require('../../lib/Client')
+const Transport = require('../../lib/transport')
 const assert = require('assert')
 const { TARANTOOL_HOST:host = 'localhost', TARANTOOL_PORT:port = 3301 } = process.env
 
 describe('handshake', () => {
-    let client
+    let transport
 
     beforeEach(async () => {
-        client = new Client({ host, port})
-        await client.connect()
+        transport = new Transport()
+        await transport.connect(port, host)
     })
 
     afterEach(async () => {
-        await client.close()
+        await transport.close()
     })
 
     it('should handshake with server', async () => {
-        assert.equal(!!client.salt, true)
-        assert.equal(!!client.greeting, true)
+        assert.equal(!!transport.salt, true)
+        assert.equal(!!transport.greeting, true)
     })
 })

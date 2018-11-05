@@ -11,7 +11,7 @@
   "dependencies": {
     "debug": "^3.1.0",
     "msgpack-lite": "^0.1.26",
-    "packet-streams": "^1.0.2",
+    "packet-streams": "^2.0.0",
     "multipipe": "^2.0.3"
   },
   "devDependencies": {
